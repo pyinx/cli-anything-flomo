@@ -175,7 +175,6 @@ flomo memo filter-tag "读书" --output json
 **Note**: `filter-tag` uses partial match. Searching "读书" will match:
 - `#学习笔记/读书/原则`
 - `#学习笔记/读书/金钱的艺术`
-- `#关键词/阅读/读书方法/纸质书和电子书`
 
 #### Filter by Content
 
@@ -373,23 +372,6 @@ flomo memo list --output json
 flomo memo filter-tag "读书" --output json
 flomo tag list --output json
 flomo memo stats --output json
-```
-
-Example JSON output:
-```json
-{
-  "memos": [
-    {
-      "slug": "MjI0OTQwNDIx",
-      "content": "<p>#日更写作/对外写作 今天的内容...</p>",
-      "created_at": "2026-03-10T08:30:00",
-      "tags": ["日更写作/对外写作", "定期总结/2026.H1/生活记录"],
-      "source": "local"
-    }
-  ],
-  "count": 1,
-  "source": "local"
-}
 ```
 
 ---

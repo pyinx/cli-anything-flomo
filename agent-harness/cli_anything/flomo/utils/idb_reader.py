@@ -150,6 +150,44 @@ class IndexedDBReader:
             return True
         return False
 
+    def _extract_files_from_jsarray(self, files_field: Any) -> List[Dict[str, Any]]:
+        """Extract file information from JSArray structure.
+
+        Object Store 1 files field has format:
+        {'__type__': 'JSArray', 'values': [{...}, {...}], 'properties': {}}
+
+        Each file in values has:
+        - id: file ID
+        - type: 'image', etc.
+        - name: filename
+        - path: file path
+        - url: full URL
+        - thumbnail_url: thumbnail URL
+
+        Args:
+            files_field: The files field from Object Store 1.
+
+        Returns:
+            List of file info dicts with id, type, url, etc.
+        """
+        if not isinstance(files_field, dict):
+            return []
+
+        if files_field.get('__type__') != 'JSArray':
+            return []
+
+        # Files are in the 'values' array
+        values = files_field.get('values', [])
+        if not values:
+            return []
+
+        files = []
+        for file_info in values:
+            if isinstance(file_info, dict):
+                files.append(file_info)
+
+        return files
+
     def _extract_tags_from_jsarray(self, tags_field: Any) -> List[str]:
         """Extract tags from JSArray structure.
 
@@ -276,6 +314,14 @@ class IndexedDBReader:
             # Collect all versions for each slug
             if slug not in self._slug_versions:
                 self._slug_versions[slug] = []
+
+            # Extract files from JSArray structure
+            files_field = inner_val.get('files')
+            if files_field:
+                files = self._extract_files_from_jsarray(files_field)
+            else:
+                files = []
+
             self._slug_versions[slug].append({
                 'timestamp': timestamp,
                 'content': content,
@@ -283,7 +329,7 @@ class IndexedDBReader:
                 'decoded_slug': None,
                 'tags': tags,
                 'pin': inner_val.get('pin', False),
-                'file_ids': inner_val.get('file_ids', []),
+                'files': files,
             })
 
             # Decode slug from base64
@@ -316,7 +362,7 @@ class IndexedDBReader:
                 'tags': latest['tags'],
                 'source': 'local',
                 'pin': latest.get('pin', False),
-                'file_ids': latest.get('file_ids', []),
+                'files': latest.get('files', []),
             })
 
         return memos

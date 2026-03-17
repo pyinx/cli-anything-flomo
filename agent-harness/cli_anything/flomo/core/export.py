@@ -290,7 +290,19 @@ body {
             created = memo.get("created_at", "")
             tags = memo.get("tags", [])  # Keep original tags
             slug = memo.get("slug", "")
-            file_ids = memo.get("file_ids", [])
+            # Support both 'file_ids' (old format) and 'files' (new format with full info)
+            files = memo.get("files") or []
+            # Extract file IDs for backward compatibility
+            file_ids = []
+            if files:
+                for f in files:
+                    if isinstance(f, dict) and 'id' in f:
+                        file_ids.append(f['id'])
+                    elif isinstance(f, (int, str)):
+                        file_ids.append(f)
+            # Also check legacy file_ids field
+            if not file_ids and memo.get("file_ids"):
+                file_ids = memo["file_ids"]
 
             if include_metadata:
                 # YAML frontmatter
@@ -313,7 +325,7 @@ body {
 
                 # Add image IDs to frontmatter
                 if file_ids:
-                    files_yaml = ", ".join([f'"{f}"' for f in file_ids])
+                    files_yaml = ", ".join([f'"{fid}"' for fid in file_ids])
                     lines.append(f"images: [{files_yaml}]\n")
 
                 lines.append("---\n\n")
@@ -357,7 +369,19 @@ body {
         created = memo.get("created_at", "")
         tags = memo.get("tags", [])  # Keep original tags
         slug = memo.get("slug", "")
-        file_ids = memo.get("file_ids", [])
+        # Support both 'file_ids' (old format) and 'files' (new format with full info)
+        files = memo.get("files") or []
+        # Extract file IDs for backward compatibility
+        file_ids = []
+        if files:
+            for f in files:
+                if isinstance(f, dict) and 'id' in f:
+                    file_ids.append(f['id'])
+                elif isinstance(f, (int, str)):
+                    file_ids.append(f)
+        # Also check legacy file_ids field
+        if not file_ids and memo.get("file_ids"):
+            file_ids = memo["file_ids"]
 
         lines = []
 
