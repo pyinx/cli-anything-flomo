@@ -7,6 +7,15 @@ description: "Interact with flomo notes using cli-anything-flomo. Use when the u
 
 Interact with flomo notes via CLI. Requires flomo desktop app to be installed and logged in.
 
+## Installation
+
+Before using this skill, ensure `cli-anything-flomo` is installed. If the command is not found, install it with:
+
+```bash
+cd agent-harness
+pip install -e .
+```
+
 ## Quick Start
 
 ```bash
